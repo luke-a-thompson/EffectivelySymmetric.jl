@@ -1,0 +1,25 @@
+name = "EffectivelySymmetric"
+uuid = "31dca2d8-8213-4e70-8681-552aef0de1b2"
+version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+OrdinaryDiffEqCore = "bbf590c4-e513-4bbe-9b18-05decba2e5d8"
+
+[weakdeps]
+ExponentialUtilities = "d4d017d3-3776-5f7e-afef-a10c40355c18"
+OrdinaryDiffEqLinear = "521117fe-8c41-49f8-b3b6-30780b3f0fb5"
+OrdinaryDiffEqLowStorageRK = "b0944070-b475-4768-8dec-fb6eb410534d"
+SciMLOperators = "c0aeaf25-5076-4817-a8d5-81caf7dfa961"
+
+[extensions]
+ESLinearExt = ["OrdinaryDiffEqLinear", "ExponentialUtilities", "SciMLOperators"]
+ESLowStorageRKExt = "OrdinaryDiffEqLowStorageRK"
+
+[extras]
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test", "Statistics", "ForwardDiff"]
