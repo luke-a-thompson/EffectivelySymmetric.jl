@@ -2,7 +2,7 @@
 
 A 3-stage, 5th-order effectively-symmetric integrator (EES25) for the [SciML](https://sciml.ai) ecosystem.
 
-EES25 is a fixed-step explicit method whose antisymmetric defect is O(h^6). This makes it ideal for long-time structure-preserving integration and memory-efficient discrete adjoints via backward reconstruction (no checkpointing needed).
+EES25 is a fixed-step explicit method whose antisymmetric defect is $O(h^6)$. This makes it ideal for long-time structure-preserving integration and memory-efficient discrete adjoints via backward reconstruction (no checkpointing needed).
 
 ## Installation
 
@@ -38,7 +38,7 @@ sol = solve(prob, EES25_2N(); dt = 0.01)
 
 ### `CFEES25()`: Commutator-Free Lie-Group
 
-Activated by loading `OrdinaryDiffEqLinear`, `ExponentialUtilities`, and `SciMLOperators`. Solves linear ODEs of the form `du/dt = A(u,t) u` using matrix exponentials, preserving Lie-group structure (e.g. SO(n) orthogonality).
+Activated by loading `OrdinaryDiffEqLinear`, `ExponentialUtilities`, and `SciMLOperators`. Solves linear ODEs of the form `du/dt = A(u,t) u` using matrix exponentials, preserving Lie-group structure (e.g. $\mathrm{SO}(n)$ orthogonality).
 
 ```julia
 using EffectivelySymmetric
@@ -74,9 +74,24 @@ Y_next = exp(0.25 (-2(-0.5 K1 + K2) + K3)) Y2
 
 ## Examples
 
-`examples/so3_sphere.jl` solves a state-dependent SO(3) ODE and compares CG2 with CFEES25. Both traces agree on the forward trajectory; the difference is in the antisymmetric error order (CG2: 3, EES25: 6).
+`examples/so3_sphere.jl` solves a state-dependent $\mathrm{SO}(3)$ ODE and compares CG2 with CFEES25. Both traces agree on the forward trajectory; the difference is in the antisymmetric error order (CG2: 3, EES25: 6).
 
 ![SO(3) trajectory comparison: CG2 vs CFEES25](so3_cg2.png)
+
+## Citation
+If you use this package, please cite the paper _Explicit and Effectively Symmetric Runge-Kutta Methods_:
+```bibtex
+@misc{https://doi.org/10.48550/arxiv.2507.21006,
+  doi = {10.48550/ARXIV.2507.21006},
+  url = {https://arxiv.org/abs/2507.21006},
+  author = {Shmelev,  Daniil and Ebrahimi-Fard,  Kurusch and Tapia,  Nikolas and Salvi,  Cristopher},
+  keywords = {Numerical Analysis (math.NA),  Classical Analysis and ODEs (math.CA),  Rings and Algebras (math.RA),  FOS: Mathematics,  FOS: Mathematics,  16T05,  65L05,  65L06,  05C05},
+  title = {Explicit and Effectively Symmetric Runge-Kutta Methods},
+  publisher = {arXiv},
+  year = {2025},
+  copyright = {arXiv.org perpetual,  non-exclusive license}
+}
+```
 
 ## License
 
