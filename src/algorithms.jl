@@ -22,13 +22,15 @@ end
 """
     CFEES25()
 
-3-stage commutator-free Lie-group integrator on SO(n).
+3-stage commutator-free Lie-group integrator associated with `EES25`.
 Requires `OrdinaryDiffEqLinear`, `ExponentialUtilities`, and `SciMLOperators` to be loaded.
-
-The update rule replaces additions with matrix exponentials:
-
-    ΔY₁ = hK₁,           Y₁ = exp(½ΔY₁)·Y₀
-    ΔY₂ = -½ΔY₁ + hK₂,  Y₂ = exp(ΔY₂)·Y₁
-    ΔY₃ = -2ΔY₂  + hK₃,  Y_{t+h} = exp(¼ΔY₃)·Y₂
 """
 struct CFEES25 <: OrdinaryDiffEqAlgorithm end
+
+"""
+    EES27()
+
+4-stage effectively-symmetric integrator (standard explicit RK form).
+Uses `OrdinaryDiffEqCore` only -- always available when the package is loaded.
+"""
+struct EES27 <: OrdinaryDiffEqAlgorithm end

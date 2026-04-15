@@ -5,6 +5,7 @@ version = "0.1.0"
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 OrdinaryDiffEqCore = "bbf590c4-e513-4bbe-9b18-05decba2e5d8"
+OrdinaryDiffEqExplicitRK = "9286f039-9fbf-40e8-bf65-aa933bdc4db0"
 
 [weakdeps]
 ExponentialUtilities = "d4d017d3-3776-5f7e-afef-a10c40355c18"
@@ -15,6 +16,9 @@ SciMLOperators = "c0aeaf25-5076-4817-a8d5-81caf7dfa961"
 [extensions]
 ESLinearExt = ["OrdinaryDiffEqLinear", "ExponentialUtilities", "SciMLOperators"]
 ESLowStorageRKExt = "OrdinaryDiffEqLowStorageRK"
+
+[compat]
+OrdinaryDiffEqExplicitRK = "1.10.0"
 
 [extras]
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"

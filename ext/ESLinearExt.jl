@@ -8,13 +8,13 @@ import OrdinaryDiffEqCore:
     _vec, increment_nf!
 
 using OrdinaryDiffEqLinear: LinearMutableCache
-using ExponentialUtilities: exponential!, ExpMethodHigham2005
+using ExponentialUtilities: exponential!, ExpMethodHigham2005, alloc_mem
 using SciMLOperators: update_coefficients!
 using LinearAlgebra: mul!, rmul!
 
 # ── Caches ──────────────────────────────────────────────────────────────────
 
-@cache struct CFEES25Cache{uType, rateType, WType} <: LinearMutableCache
+@cache struct CFEES25Cache{uType, rateType, WType, expType} <: LinearMutableCache
     u::uType
     uprev::uType
     uprev2::uType
@@ -23,6 +23,7 @@ using LinearAlgebra: mul!, rmul!
     W::WType
     Wtmp::WType
     k::rateType
+    exp_cache::expType
 end
 
 struct CFEES25ConstantCache <: OrdinaryDiffEqConstantCache end
@@ -35,9 +36,10 @@ function alg_cache(
     ) where {uEltypeNoUnits, uBottomEltypeNoUnits, tTypeNoUnits}
     W         = false .* _vec(rate_prototype) .* _vec(rate_prototype)'
     Wtmp      = similar(W)
+    exp_cache = alloc_mem(W, ExpMethodHigham2005())
     k         = zero(rate_prototype)
     fsalfirst = zero(rate_prototype)
-    return CFEES25Cache(u, uprev, uprev2, zero(u), fsalfirst, W, Wtmp, k)
+    return CFEES25Cache(u, uprev, uprev2, zero(u), fsalfirst, W, Wtmp, k, exp_cache)
 end
 
 function alg_cache(
@@ -73,7 +75,7 @@ end
 
 function perform_step!(integrator, cache::CFEES25Cache, repeat_step = false)
     (; t, dt, uprev, u, p) = integrator
-    (; tmp, k, W, Wtmp) = cache
+    (; tmp, k, W, Wtmp, exp_cache) = cache
     exp_method = ExpMethodHigham2005()
     L = integrator.f.f
 
@@ -85,7 +87,7 @@ function perform_step!(integrator, cache::CFEES25Cache, repeat_step = false)
     # Stage 2: Y₁ = exp(½K₁)·Y₀
     copyto!(Wtmp, W)
     rmul!(Wtmp, 1 / 2)
-    exponential!(Wtmp, exp_method)
+    exponential!(Wtmp, exp_method, exp_cache)
     mul!(tmp, Wtmp, uprev)
 
     # K₂ = h·A(t+½h, Y₁),  ΔY₂ = -½ΔY₁ + K₂
@@ -96,7 +98,7 @@ function perform_step!(integrator, cache::CFEES25Cache, repeat_step = false)
 
     # Stage 3: Y₂ = exp(ΔY₂)·Y₁
     copyto!(Wtmp, W)
-    exponential!(Wtmp, exp_method)
+    exponential!(Wtmp, exp_method, exp_cache)
     mul!(k, Wtmp, tmp)
 
     # K₃ = h·A(t+h, Y₂),  ΔY₃ = -2ΔY₂ + K₃
@@ -108,7 +110,7 @@ function perform_step!(integrator, cache::CFEES25Cache, repeat_step = false)
     # Update: Y_{t+h} = exp(¼ΔY₃)·Y₂
     copyto!(Wtmp, W)
     rmul!(Wtmp, 1 / 4)
-    exponential!(Wtmp, exp_method)
+    exponential!(Wtmp, exp_method, exp_cache)
     mul!(u, Wtmp, k)
 
     integrator.f(integrator.fsallast, u, p, t + dt)
