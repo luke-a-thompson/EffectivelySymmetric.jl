@@ -9,20 +9,20 @@ authors:
   - family-names: "Salvi"
     given-names: "Cristopher"
 
-references:
-  - type: article
-    title: "Explicit and Effectively Symmetric Schemes for Neural SDEs on Lie Groups"
-    authors:
-      - family-names: "Shmelev"
-        given-names: "Daniil"
-      - family-names: "Thompson"
-        given-names: "Luke"
-      - family-names: "Salvi"
-        given-names: "Cristopher"
-    year: 2026
-    date-released: "2026-05-09"
-    doi: "10.48550/arXiv.2509.20599"
-    url: "https://arxiv.org/abs/2509.20599"
+preferred-citation:
+  type: article
+  title: "Explicit and Effectively Symmetric Schemes for Neural SDEs on Lie Groups"
+  authors:
+    - family-names: "Shmelev"
+      given-names: "Daniil"
+    - family-names: "Thompson"
+      given-names: "Luke"
+    - family-names: "Salvi"
+      given-names: "Cristopher"
+  year: 2026
+  date-released: "2026-05-09"
+  doi: "10.48550/arXiv.2509.20599"
+  url: "https://arxiv.org/abs/2509.20599"
 
   - type: article
     title: "Explicit and Effectively Symmetric Runge-Kutta Methods"
