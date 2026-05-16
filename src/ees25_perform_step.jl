@@ -2,9 +2,16 @@
 # Uses the supplied explicit RK tableaux directly.
 
 import OrdinaryDiffEqCore: OrdinaryDiffEqMutableCache, OrdinaryDiffEqConstantCache,
-    @cache, get_fsalfirstlast
+    @cache, get_fsalfirstlast, isfsal, alg_order
 
 const ExplicitEESAlgorithm = Union{EES25, EES27}
+
+# These methods stash f(u_{n+1}, t_{n+1}) into `fsalfirst` themselves, so the
+# integrator core must not swap fsalfirst <-> fsallast between steps.
+isfsal(::ExplicitEESAlgorithm) = false
+
+alg_order(::EES25) = 2
+alg_order(::EES27) = 2
 
 # ── Caches ──────────────────────────────────────────────────────────────────
 

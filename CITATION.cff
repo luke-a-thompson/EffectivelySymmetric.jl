@@ -1,0 +1,41 @@
+cff-version: "1.2.0"
+message: "If you use this software, please cite the references listed in this file."
+title: "EffectivelySymmetric.jl"
+authors:
+  - family-names: "Shmelev"
+    given-names: "Daniil"
+  - family-names: "Thompson"
+    given-names: "Luke"
+  - family-names: "Salvi"
+    given-names: "Cristopher"
+
+references:
+  - type: article
+    title: "Explicit and Effectively Symmetric Schemes for Neural SDEs on Lie Groups"
+    authors:
+      - family-names: "Shmelev"
+        given-names: "Daniil"
+      - family-names: "Thompson"
+        given-names: "Luke"
+      - family-names: "Salvi"
+        given-names: "Cristopher"
+    year: 2026
+    date-released: "2026-05-09"
+    doi: "10.48550/arXiv.2509.20599"
+    url: "https://arxiv.org/abs/2509.20599"
+
+  - type: article
+    title: "Explicit and Effectively Symmetric Runge-Kutta Methods"
+    authors:
+      - family-names: "Shmelev"
+        given-names: "Daniil"
+      - family-names: "Ebrahimi-Fard"
+        given-names: "Kurusch"
+      - family-names: "Tapia"
+        given-names: "Nikolas"
+      - family-names: "Salvi"
+        given-names: "Cristopher"
+    year: 2025
+    date-released: "2025-07-28"
+    doi: "10.48550/arXiv.2507.21006"
+    url: "https://arxiv.org/abs/2507.21006"

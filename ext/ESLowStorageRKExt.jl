@@ -3,10 +3,15 @@ module ESLowStorageRKExt
 using EffectivelySymmetric:
     EES25_2N, EES25_A2end, EES25_B1, EES25_B2end, EES25_C2end
 
-import OrdinaryDiffEqCore: alg_cache, constvalue
+import OrdinaryDiffEqCore: alg_cache, constvalue, isfsal, alg_order
 
 using OrdinaryDiffEqLowStorageRK:
     LowStorageRK2NCache, LowStorageRK2NConstantCache
+
+# The Williamson 2N perform_step! advances fsalfirst itself; the integrator
+# core must not swap fsalfirst <-> fsallast between steps.
+isfsal(::EES25_2N) = false
+alg_order(::EES25_2N) = 2
 
 function EES25_2NConstantCache(T, T2)
     A2end = (convert(T, EES25_A2end[1]), convert(T, EES25_A2end[2]))

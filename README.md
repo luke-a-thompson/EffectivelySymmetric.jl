@@ -81,7 +81,7 @@ The `EES27` tableau is
 
 `examples/so3_sphere.jl` solves a state-dependent $\mathrm{SO}(3)$ ODE and compares CG2 with CFEES25. Both traces agree on the forward trajectory; the difference is in the antisymmetric error order (CG2: 3, EES25: 6).
 
-![SO(3) trajectory comparison: CG2 vs CFEES25](so3_cg2.png)
+![SO(3) trajectory comparison: CG2 vs CFEES25](figures/so3_cg2.png)
 
 ## Citation
 If you use this package, please cite the paper _Explicit and Effectively Symmetric Runge-Kutta Methods_:
