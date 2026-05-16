@@ -1,17 +1,20 @@
 module ESLowStorageRKExt
 
 using EffectivelySymmetric:
-    EES25_2N, EES25_A2end, EES25_B1, EES25_B2end, EES25_C2end
+    EES25_2N, EES25_A2end, EES25_B1, EES25_B2end, EES25_C2end,
+    EES27_2N, EES27_A2end, EES27_B1, EES27_B2end, EES27_C2end
 
 import OrdinaryDiffEqCore: alg_cache, constvalue, isfsal, alg_order
 
 using OrdinaryDiffEqLowStorageRK:
     LowStorageRK2NCache, LowStorageRK2NConstantCache
 
+const EES2N = Union{EES25_2N, EES27_2N}
+
 # The Williamson 2N perform_step! advances fsalfirst itself; the integrator
 # core must not swap fsalfirst <-> fsallast between steps.
-isfsal(::EES25_2N) = false
-alg_order(::EES25_2N) = 2
+isfsal(::EES2N) = false
+alg_order(::EES2N) = 2
 
 function EES25_2NConstantCache(T, T2)
     A2end = (convert(T, EES25_A2end[1]), convert(T, EES25_A2end[2]))
@@ -21,13 +24,36 @@ function EES25_2NConstantCache(T, T2)
     return LowStorageRK2NConstantCache{2, T, T2}(A2end, B1, B2end, c2end)
 end
 
+function EES27_2NConstantCache(T, T2)
+    A2end = (
+        convert(T, EES27_A2end[1]),
+        convert(T, EES27_A2end[2]),
+        convert(T, EES27_A2end[3]),
+    )
+    B1    = convert(T, EES27_B1)
+    B2end = (
+        convert(T, EES27_B2end[1]),
+        convert(T, EES27_B2end[2]),
+        convert(T, EES27_B2end[3]),
+    )
+    c2end = (
+        convert(T2, EES27_C2end[1]),
+        convert(T2, EES27_C2end[2]),
+        convert(T2, EES27_C2end[3]),
+    )
+    return LowStorageRK2NConstantCache{3, T, T2}(A2end, B1, B2end, c2end)
+end
+
+_es_2n_tab(::EES25_2N, T, T2) = EES25_2NConstantCache(T, T2)
+_es_2n_tab(::EES27_2N, T, T2) = EES27_2NConstantCache(T, T2)
+
 function alg_cache(
-        alg::EES25_2N, u, rate_prototype, ::Type{uEltypeNoUnits},
+        alg::EES2N, u, rate_prototype, ::Type{uEltypeNoUnits},
         ::Type{uBottomEltypeNoUnits}, ::Type{tTypeNoUnits}, uprev, uprev2, f, t,
         dt, reltol, p, calck,
         ::Val{true}, verbose
     ) where {uEltypeNoUnits, uBottomEltypeNoUnits, tTypeNoUnits}
-    tab = EES25_2NConstantCache(constvalue(uBottomEltypeNoUnits), constvalue(tTypeNoUnits))
+    tab = _es_2n_tab(alg, constvalue(uBottomEltypeNoUnits), constvalue(tTypeNoUnits))
     tmp = zero(u)
     williamson_condition = alg.williamson_condition
     if calck
@@ -47,12 +73,12 @@ function alg_cache(
 end
 
 function alg_cache(
-        alg::EES25_2N, u, rate_prototype, ::Type{uEltypeNoUnits},
+        alg::EES2N, u, rate_prototype, ::Type{uEltypeNoUnits},
         ::Type{uBottomEltypeNoUnits}, ::Type{tTypeNoUnits}, uprev, uprev2, f, t,
         dt, reltol, p, calck,
         ::Val{false}, verbose
     ) where {uEltypeNoUnits, uBottomEltypeNoUnits, tTypeNoUnits}
-    return EES25_2NConstantCache(constvalue(uBottomEltypeNoUnits), constvalue(tTypeNoUnits))
+    return _es_2n_tab(alg, constvalue(uBottomEltypeNoUnits), constvalue(tTypeNoUnits))
 end
 
 end

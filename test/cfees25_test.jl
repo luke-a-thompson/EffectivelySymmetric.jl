@@ -36,9 +36,9 @@ function _so3_problem(tspan)
     return ODEProblem(op, u0, tspan)
 end
 
-@testset "SO(3) orthogonality preserved" begin
+@testset "$(nameof(typeof(alg))) preserves SO(3) orthogonality" for alg in (CFEES25(), CFEES27())
     prob = _so3_problem((0.0, 2.0))
-    sol = solve(prob, CFEES25(); dt = 0.02, saveat = 0.04)
+    sol = solve(prob, alg; dt = 0.02, saveat = 0.04)
     max_err = maximum(sol.u) do u
         R = reshape(u, 3, 3)
         norm(R' * R - I(3))
@@ -46,9 +46,9 @@ end
     @test max_err < 1e-10
 end
 
-function _cf_reversal_error(h)
+function _cf_reversal_error(alg, h)
     f_prob = _so3_problem((0.0, h))
-    u1 = solve(f_prob, CFEES25(); dt = h, adaptive = false,
+    u1 = solve(f_prob, alg; dt = h, adaptive = false,
                save_everystep = false, save_start = false).u[end]
 
     # SciMLOperators caches the update_func state on the operator; build a
@@ -56,21 +56,30 @@ function _cf_reversal_error(h)
     A0 = zeros(9, 9)
     op_b = MatrixOperator(A0; update_func! = _update_A!)
     b_prob = ODEProblem(op_b, u1, (h, 0.0))
-    u_back = solve(b_prob, CFEES25(); dt = h, adaptive = false,
+    u_back = solve(b_prob, alg; dt = h, adaptive = false,
                    save_everystep = false, save_start = false).u[end]
 
     return norm(u_back - vec(Matrix{Float64}(I, 3, 3)))
 end
 
-@testset "CFEES25 reversal slope ≈ 6" begin
-    hs = [0.2 * 2.0^(-k) for k in 0:6]
-    errs = [_cf_reversal_error(h) for h in hs]
+function _cf_reversal_slope(alg; hs = [0.2 * 2.0^(-k) for k in 0:6])
+    errs = [_cf_reversal_error(alg, h) for h in hs]
     keep = [k for k in eachindex(errs) if isfinite(errs[k]) && errs[k] > 1e-13]
     @assert length(keep) >= 4
     x = log.(hs[keep]); y = log.(errs[keep])
     tail = max(1, length(x) - 4):length(x)
     xs = x[tail]; ys = y[tail]
     xm = mean(xs); ym = mean(ys)
-    slope = sum((xs .- xm) .* (ys .- ym)) / sum((xs .- xm) .^ 2)
-    @test 5.0 < slope < 7.5
+    return sum((xs .- xm) .* (ys .- ym)) / sum((xs .- xm) .^ 2)
+end
+
+@testset "CFEES25 reversal slope ≈ 6" begin
+    @test 5.0 < _cf_reversal_slope(CFEES25()) < 7.5
+end
+
+@testset "CFEES27 reversal slope ≈ 8" begin
+    # Order-8 errors saturate near round-off quickly; use a coarser h range
+    # so enough points stay above the 1e-13 floor for a clean fit.
+    hs = [0.5 * 2.0^(-k) for k in 0:4]
+    @test 6.8 < _cf_reversal_slope(CFEES27(); hs = hs) < 9.5
 end

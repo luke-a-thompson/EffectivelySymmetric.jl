@@ -42,3 +42,8 @@ end
     s = _convergence_slope(EES25_2N())
     @test 1.7 < s < 3.5
 end
+
+@testset "EES27_2N classical order" begin
+    s = _convergence_slope(EES27_2N())
+    @test 1.7 < s < 4.5
+end

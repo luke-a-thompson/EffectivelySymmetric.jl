@@ -10,6 +10,6 @@ include("tableaux.jl")
 include("algorithms.jl")
 include("ees25_perform_step.jl")
 
-export EES25, EES25_2N, CFEES25, EES27
+export EES25, EES25_2N, CFEES25, EES27, EES27_2N, CFEES27
 
 end

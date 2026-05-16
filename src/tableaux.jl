@@ -27,9 +27,27 @@ const EES27_C = (
     (4 + _SQRT2) / 6,
 )
 
-# Existing Williamson 2N / commutator-free EES25 coefficients retained for the
-# dedicated low-storage and Lie-group backends.
+# Williamson 2N / commutator-free coefficients for the dedicated low-storage
+# and Lie-group backends. CFEES uses the same recurrence as the 2N RK form:
+# one exponential per stage.
 const EES25_A2end = (-0.5, -2.0)
 const EES25_B1    = 0.5
 const EES25_B2end = (1.0, 0.25)
 const EES25_C2end = (0.5, 1.0)
+
+const EES27_A2end = (
+    (-7 + 4 * _SQRT2) / 3,
+    -(4 + 5 * _SQRT2) / 12,
+    3 * (-31 + 8 * _SQRT2) / 49,
+)
+const EES27_B1    = (2 - _SQRT2) / 3
+const EES27_B2end = (
+    (4 + _SQRT2) / 8,
+    3 * (3 - _SQRT2) / 7,
+    (9 - 4 * _SQRT2) / 14,
+)
+const EES27_C2end = (
+    (2 - _SQRT2) / 3,
+    (2 + _SQRT2) / 6,
+    (4 + _SQRT2) / 6,
+)

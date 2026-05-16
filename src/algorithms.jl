@@ -34,3 +34,24 @@ struct CFEES25 <: OrdinaryDiffEqAlgorithm end
 Uses `OrdinaryDiffEqCore` only -- always available when the package is loaded.
 """
 struct EES27 <: OrdinaryDiffEqAlgorithm end
+
+"""
+    EES27_2N(; williamson_condition = true)
+
+4-stage effectively-symmetric integrator in 2N low-storage form.
+Requires `OrdinaryDiffEqLowStorageRK` to be loaded.
+"""
+Base.@kwdef struct EES27_2N{StageLimiter, StepLimiter, Thread} <: OrdinaryDiffEqAlgorithm
+    stage_limiter!::StageLimiter = trivial_limiter!
+    step_limiter!::StepLimiter = trivial_limiter!
+    thread::Thread = False()
+    williamson_condition::Bool = true
+end
+
+"""
+    CFEES27()
+
+4-stage commutator-free Lie-group integrator associated with `EES27`.
+Requires `OrdinaryDiffEqLinear`, `ExponentialUtilities`, and `SciMLOperators` to be loaded.
+"""
+struct CFEES27 <: OrdinaryDiffEqAlgorithm end
