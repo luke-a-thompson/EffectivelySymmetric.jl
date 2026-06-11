@@ -57,6 +57,51 @@ sol25 = solve(prob, CFEES25(); dt = 0.01)
 sol27 = solve(prob, CFEES27(); dt = 0.01)
 ```
 
+## Controlled differential equations
+
+A controlled DE `dY = V(Y) dX` driven by an interpolated path `X` is, pathwise, the ODE `dY/dt = V(Y)·Ẋ(t)`. Fold the control derivative into the vector field and use the standard solvers — no extra machinery. (`DataInterpolations` supplies `X` and `Ẋ`; use a C² interpolant such as `CubicSpline` to keep full order, and align `dt` to the data knots if the control is only piecewise-linear.)
+
+### Euclidean
+
+```julia
+using EffectivelySymmetric, OrdinaryDiffEqCore, DataInterpolations
+
+# 2-channel control path X: ℝ → ℝ², sampled then C²-interpolated
+tdata = range(0, 1; length = 21)
+Xdata = [cos.(2π .* tdata)  sin.(2π .* tdata)]            # N×2
+Xitp  = [CubicSpline(Xdata[:, i], tdata) for i in 1:2]
+Ẋ(t)  = [DataInterpolations.derivative(Xitp[i], t) for i in 1:2]
+
+# Controlled field  dY = V(Y) dX  ⇒  dY/dt = V(Y)·Ẋ(t)
+V(Y) = [-Y[2]  0.0;
+         0.0   Y[1]]                                      # d×k (here 2×2)
+f(Y, p, t) = V(Y) * Ẋ(t)
+
+sol = solve(ODEProblem(f, [1.0, 0.0], (0.0, 1.0)), EES25(); dt = 1 / 256)
+```
+
+### SO(3) (Lie group)
+
+```julia
+using EffectivelySymmetric, OrdinaryDiffEqLinear, SciMLOperators, ExponentialUtilities
+using DataInterpolations, LinearAlgebra
+
+hat(v) = [0.0 -v[3] v[2]; v[3] 0.0 -v[1]; -v[2] v[1] 0.0]
+
+# 3-channel control path X: ℝ → ℝ³
+tdata = range(0, 1; length = 21)
+Xdata = [tdata .^ 2  sin.(tdata)  0.5 .* tdata]           # N×3
+Xitp  = [CubicSpline(Xdata[:, i], tdata) for i in 1:3]
+Ẋ(t)  = [DataInterpolations.derivative(Xitp[i], t) for i in 1:3]
+
+# Controlled SO(3) CDE  dR = hat(dX)·R  ⇒  du/dt = kron(I, hat(Ẋ(t)))·u,  u = vec(R)
+update_A!(A, u, p, t) = (A .= kron(I(3), hat(Ẋ(t))))
+op   = MatrixOperator(zeros(9, 9); update_func! = update_A!)
+prob = ODEProblem(op, vec(Matrix{Float64}(I, 3, 3)), (0.0, 1.0))
+
+sol = solve(prob, CFEES25(); dt = 1 / 256)               # stays in SO(3) to round-off
+```
+
 ## Method
 
 The revised `EES25` tableau is
