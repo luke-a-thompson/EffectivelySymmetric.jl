@@ -15,7 +15,7 @@ EES25 is a fixed-step explicit method whose antisymmetric defect is $O(h^6)$. Th
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/<org>/EffectivelySymmetric.jl")
+Pkg.add(url="https://github.com/luke-a-thompson/EffectivelySymmetric.jl")
 ```
 
 ## Algorithms
