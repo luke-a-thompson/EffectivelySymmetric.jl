@@ -113,7 +113,7 @@ function initialize!(integrator, cache::EESConstantCache)
     return integrator.k[1] = integrator.fsalfirst
 end
 
-# ── perform_step! (in-place) ────────────────────────────────────────────────
+# ── perform_step! (in-place RHS) ────────────────────────────────────────────
 
 function perform_step!(integrator, cache::EES25Cache, repeat_step = false)
     (; t, dt, uprev, u, f, p) = integrator
@@ -157,7 +157,7 @@ function perform_step!(integrator, cache::EES27Cache, repeat_step = false)
     increment_nf!(integrator.stats, 1)
 end
 
-# ── perform_step! (out-of-place) ────────────────────────────────────────────
+# ── perform_step! (out-of-place RHS) ────────────────────────────────────────
 
 function perform_step!(integrator, cache::EES25ConstantCache, repeat_step = false)
     (; t, dt, uprev, f, p) = integrator

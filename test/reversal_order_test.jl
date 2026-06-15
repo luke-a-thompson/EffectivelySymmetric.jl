@@ -36,7 +36,7 @@ end
 # and stay coarse enough that the defect sits above round-off saturation.
 function _reversal_order(alg, hs; u0 = 0.7)
     errs = [_reversal_error(alg, u0, h) for h in hs]
-    return last(calc𝒪estimates(:final => errs))
+    return only(last(calc𝒪estimates(:final => errs)))
 end
 
 @testset "EES25 reversal order ≈ 6" begin
